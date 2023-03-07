@@ -6,6 +6,7 @@ import Product from "@/views/layout/content/product/product_list/Product_list.vu
 const Addgoods=()=>import("@/views/layout/content/product/product_list/Addgoods.vue")
 const AddDetails=()=>import("@/views/layout/content/product/product_list/adddetails/AddDetails")
 const Order_list=()=>import("@/views/layout/content/order/Order_list.vue")
+const Order_result=()=>import("@/views/layout/content/order/Order_result.vue")
 const routes = [
   {
     path: '/',
@@ -49,6 +50,11 @@ const routes = [
               path: "orderList",
               name: "orderList",
               component: Order_list,
+          },
+          { 
+              path: "orderResult",
+              name: "orderResult",
+              component: Order_result,
           }
         ]
       }

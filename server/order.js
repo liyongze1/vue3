@@ -48,9 +48,8 @@ router.get("/list", (req, res) => {
 */
 router.get("/changeStatus", (req, res) => {
   //ids='1,2,3'
-  let ids = req.query.ids; //
+  let ids = req.query.ids;
   const sql = `update orderinfo set huizongStatus='2' where id in (${ids})`;
-  console.log(sql);
   sqlFn(sql, null, (result) => {
     if (result.affectedRows > 0) {
       res.send({

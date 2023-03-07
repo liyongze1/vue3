@@ -14,6 +14,7 @@
 <script setup>
 import { onMounted, reactive, ref, toRefs, watch} from 'vue'
 let result=defineProps(["pag"])
+console.log("----------------",result);
 //设置总数
 //设置每页显示
 const currentPage4 = ref(1)

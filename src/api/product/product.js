@@ -30,7 +30,11 @@ const api={
     //删除商品的类目信息 ids
     product_Delet_Detail:"/api/content/deleteContentCategoryById",
     //新增一级导航类目 name
-    product_One_Detail:"/api/itemCategory/insertCategory"
+    product_One_Detail:"/api/itemCategory/insertCategory",
+    //新增表格
+    product_One_List:"/api/order/list",
+    //汇总的接口
+    product_One_changeStatus:"/api/order/changeStatus"
 }
 export default {
     product_List(params){
@@ -62,6 +66,12 @@ export default {
     },
     product_One_Detail(params){
         return axios.get(api.product_One_Detail,{params})
+    },
+    product_One_List(params){
+        return axios.get(api.product_One_List,{params})
+    },
+    product_One_changeStatus(params){
+        return axios.get(api.product_One_changeStatus,{params})
     },
     //上传图片的路径
     upLoad:"/api/upload"

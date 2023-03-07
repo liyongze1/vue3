@@ -29,8 +29,9 @@
         <span>订单管理</span>
       </template>
       <el-menu-item-group>
-        <el-menu-item index="/order/orderList">产品列表</el-menu-item>
-        <el-menu-item index="2-2">产品详情</el-menu-item>
+        <el-menu-item index="/order/orderList">订单列表</el-menu-item>
+        <el-menu-item index="/order/orderResult">汇总清单</el-menu-item>
+        <el-menu-item index="2-2">订单审核</el-menu-item>
       </el-menu-item-group>
     </el-sub-menu>
     <el-sub-menu index="3">
