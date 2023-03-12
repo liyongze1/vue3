@@ -6,7 +6,7 @@ const client = mysql.createConnection({
     host: 'localhost', //数据域名 地址
     user: 'root', //数据名称
     password: '', //数据库密码 xampp集成
-    database: 'managementSystem',
+    database: 'management',
     // port:'3306' 端口号
 })
 

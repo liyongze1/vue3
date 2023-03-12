@@ -1,5 +1,6 @@
 <template>
   <div class="product_list">
+    <Breadcrumb></Breadcrumb>
     <div class="product_info">
       <div class="product_info_top">
         <div class="product_name">

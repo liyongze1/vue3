@@ -1,5 +1,6 @@
 <template>
   <div class="order">
+    <Breadcrumb></Breadcrumb>
     <div class="order_top_box">
       <el-row>
         <el-col :span="14">
@@ -49,16 +50,12 @@
               </div>
             </div>
             <div class="result_data">
-              <div class="block">
-                汇总状态：<el-cascader
-                  :options="options"
-                />
-              </div>
+              <div class="block">汇总状态：<el-cascader /></div>
             </div>
           </div>
         </el-col>
         <el-col :span="10" class="abc">
-            <el-button type="primary">查询</el-button>
+          <el-button type="primary">查询</el-button>
         </el-col>
       </el-row>
     </div>
@@ -70,10 +67,10 @@
         :header="title"
         name="商品信息.xls"
       > -->
-        <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
-        <!-- <el-button type="success" @click="derive">导出</el-button>
-      </download-excel>
-      <el-button type="danger" class="btnRevoke" @click="batches"
+      <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
+       <el-button type="success" @click="derive">导出</el-button>
+      <!-- </download-excel> -->
+      <!-- <el-button type="danger" class="btnRevoke" @click="batches"
         >批量撤销</el-button
       > -->
     </div>
@@ -119,28 +116,72 @@
         </el-table-column>
       </el-table>
     </div>
-    <Pagination
-      :pag="page_obj"
-      @handData="orderList"
-    ></Pagination>
+    <Pagination :pag="page_obj"></Pagination>
   </div>
 </template>
 
 <script setup>
 import "lodash";
+import exportExcel from "@/utils/excel.js"
 import Pagination from "@/components/Pagination.vue";
-import dayjs from "dayjs"
-import { reactive, ref } from "vue";
-const page_obj=reactive({page:1,total:20})
-const options=[{
-    value:"已汇总",
-    lable:"未汇总"
-}]
-//汇总的数据
-const tableData=ref([{}])
+import dayjs from "dayjs";
+import { inject, onMounted, reactive, ref } from "vue";
+const api = inject("$api");
+const page_obj = reactive({ page: 1, total: 20 });
+//多选的数据
+const selectData = ref([]);
+//点击多选框
+const selectionChange = (selection) => {
+  selectData.value = selection;
+};
+//撤销汇总
+const revoke = (scope) => {
+  if (selectData.value.length > 0) {
+    //允许撤销 撤销的数据要在多选数据里面有
+    selectData.value.find((item) => {
+      if (item.id == scope.row.id) {
+        //执行撤销
+        Order_cancel(scope.row.id)
+      } else {
+        ElMessage({
+          message: "请选择勾选的数据",
+          type: "warning",
+          duration:1000
+        });
+      }
+    });
+  }else {
+        ElMessage({
+          message: "请勾选要撤销的数据",
+          type: "warning",
+          duration:1000
+        });
+      }
+};
+//汇总来的数据
+const tableData = ref([]);
 //导出
-const title=""
-const json_fields=""
+const title = "";
+const json_fields = "";
+//请求汇总的网络请求
+const Order_collect = async () => {
+  let res = await api.Order_collect();
+  if (res.data.status == 200) {
+    tableData.value = res.data.data;
+  }
+};
+//撤销的网络请求
+const Order_cancel=async(id)=>{
+  let res=await api.Order_cancel({id});
+  if(res.data.status==200){
+    //重新加载当前页数据
+    Order_collect()
+  }
+  console.log("撤销的网络请求",res);
+}
+onMounted(() => {
+  Order_collect();
+});
 </script>
 
 <style lang="less" scoped>
@@ -191,11 +232,11 @@ const json_fields=""
       text-align: center;
     }
   }
-  .abc{
-  position: absolute;
+  .abc {
+    position: absolute;
     top: 50px;
     left: 600px;
-}
+  }
   .btnRevoke {
     margin-right: 20px;
     display: inline-block;

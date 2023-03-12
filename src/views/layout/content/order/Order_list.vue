@@ -1,4 +1,5 @@
 <template>
+<Breadcrumb></Breadcrumb>
   <div class="order" ref="order">
     <div class="order_top_box">
       <el-row>
@@ -59,10 +60,7 @@
             <div class="result_data">
               <div class="block">
                 汇总状态：
-                <el-cascader
-                  v-model="value"
-                  :options="options"
-                />
+                <el-cascader v-model="value" :options="options" />
               </div>
             </div></div
         ></el-col>
@@ -82,8 +80,8 @@
         :header="title"
         name="商品信息.xls"
       > -->
-        <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
-        <el-button type="success" @click="derive">导出</el-button>
+      <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
+      <el-button type="success" @click="derive">导出</el-button>
       <!-- </download-excel> -->
     </div>
     <div class="order_table">
@@ -141,27 +139,30 @@
 </template>
 
 <script setup>
-import { ref,inject, onMounted, reactive } from "vue";
+import { ref, inject, onMounted, reactive } from "vue";
 import Pagination from "@/components/Pagination.vue";
-// import Pagination from "../../../../components/Pagination.vue"
 import dayjs from "dayjs";
+import { exportExcel } from "../../../../utils/excel";
 import { ElStep } from "element-plus";
 import { Message } from "@element-plus/icons-vue";
-const api=inject("$api")
+import {useRoute} from "vue-router"
+const route=useRoute()
+console.log("路由信息标识",route);
+const api = inject("$api");
+console.log(api);
 //表格的数据
-const tableData = ref([
-  {
-    id: '2016-05-03',
-    ordername:"1",
-    company: 'Tom',
-    phone: 'No. 189, Grove St, Los Angeles',
-    create_time: '123',
-    price:"1",
-    huizongStatus:"1"
-  },
-]);
+const tableData = ref([]);
+//导出表格的中文名字
+const excel = [
+  "订单编号",
+  "下单人",
+  "所属单位",
+  "联系电话",
+  "预定时间",
+  "汇总订单总价格",
+];
 //总页数和总条目数
-const page_obj=reactive({page:8})
+const page_obj = reactive({ page: 8 });
 //订单编号内容
 const input = ref();
 //预定日期
@@ -183,71 +184,74 @@ const options = ref([
   },
 ]);
 //汇总的数据
-const huizong=ref([])
+const huizong = ref([]);
 //当前页码
-const current_page=ref()
+const current_page = ref();
 //点击订单汇总
-const orderGther=()=>{
-  if(huizong.value.length>1){
+const orderGther = () => {
+  if (huizong.value.length > 1) {
     //执行汇总
-    let ids=[]
-    huizong.value.map(item=>{
-      ids.push(item.id)
-    })
-   product_One_changeStatus(String(ids))
-  }else{
+    let ids = [];
+    huizong.value.map((item) => {
+      ids.push(item.id);
+    });
+    // console.log(ids);
+    Order_changeStatus(String(ids));
+  } else {
     ElMessage({
-    message: '汇总数据必须大于1条',
-    type: 'warning',
-  })
+      message: "汇总数据必须大于1条",
+      type: "warning",
+    });
   }
-}
+};
 //点击导出
-const derive=()=>{
-
-}
-//点击表格的多选框触发
-const select=(selection, row)=>{
-  huizong.value=selection
-  console.log("当前行的数据",selection);
-}
-//点击表格的多选框触发
-const selectable=(row,index)=>{
-  if(row.huizongStatus==2){
-    return false
-  }else{
-    return true
+const derive = () => {
+  if (huizong.value.length > 0) {
+    //导出       表格数据          表哥文件名  表格头 
+    exportExcel(tableData.value, "test", excel, "sheetName");
   }
-}
+};
+//点击表格的多选框触发
+const select = (selection, row) => {
+  huizong.value = selection;
+  console.log("当前行的数据", selection);
+};
+//点击表格的多选框触发
+const selectable = (row, index) => {
+  if (row.huizongStatus == 2) {
+    return false;
+  } else {
+    return true;
+  }
+};
 //网络请求
-const product_One_List= async (page=1)=>{
+const product_One_List = async (page = 1) => {
   //当前的页码
-  current_page.value=page
-  let res= await api.product_One_List({page})
-  if(res.data.status==200){
-    tableData.value=res.data.data
-    page_obj.total=res.data.total
+  current_page.value = page;
+  let res = await api.product_One_List({ page });
+  if (res.data.status == 200) {
+    tableData.value = res.data.data;
+    page_obj.total = res.data.total;
     // console.log(page.value.total=1);
     // page.total=res.data.total
   }
-}
+};
 //汇总的网络请求
-const product_One_changeStatus=async(ids)=>{
-  console.log(ids);
-  let res =await api.product_One_changeStatus({ids})
-  if(res.data.status==200){
+const Order_changeStatus = async (ids) => {
+  let res = await api.Order_changeStatus({ ids });
+  if (res.data.status == 200) {
     ElMessage({
-    message: '汇总成功',
-    type: 'success',
-  })
-  //当前页的网络请求
-  product_One_List(current_page.value)
+      message: "汇总成功",
+      type: "success",
+    });
+    //当前页的网络请求
+    product_One_List(current_page.value);
   }
   console.log(res);
-}
-onMounted(()=>{
-  product_One_List()
-})
+};
+onMounted(() => {
+  product_One_List();
+});
 </script>
 
 <style lang="less" scoped>

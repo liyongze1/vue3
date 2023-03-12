@@ -1,5 +1,6 @@
 <template>
   <div class="custom-tree-container">
+    <Breadcrumb></Breadcrumb>
     <div class="custom-nav">
       <el-button size="small" type="success" class="btn_one" @click="One_Nav">
         新增一级类目
